@@ -1,0 +1,399 @@
+unit PrimeiroProjeto;
+
+interface
+
+uses
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids,
+  Vcl.DBGrids, Vcl.ExtCtrls, Vcl.Buttons;
+
+type
+    TFrmPrimeiroProjeto = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Fechar: TButton;
+    Salvar: TButton;
+    EdtName: TEdit;
+    EdtEmail: TEdit;
+    EdtTelefone: TEdit;
+    EdtDocumento: TEdit;
+    EdtRua: TEdit;
+    EdtCep: TEdit;
+    EdtBairro: TEdit;
+    EdtNumero: TEdit;
+    Adicionar: TButton;
+    btnCarregar: TButton;
+    btnLimpar: TButton;
+    ativo: TCheckBox;
+    cmbSituacaoCivil: TComboBox;
+    EdtIdade: TEdit;
+    Label6: TLabel;
+    Label10: TLabel;
+    memoObs: TMemo;
+    Situação: TLabel;
+    EdtId: TEdit;
+    Label11: TLabel;
+    btnVisualizar: TBitBtn;
+    EdtCnh: TEdit;
+    Label12: TLabel;
+    procedure FecharClick(Sender: TObject);
+    procedure AdicionarClick(Sender: TObject);
+    procedure btnCarregarClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure btnLimparClick(Sender: TObject);
+    procedure btnVisualizarClick(Sender: TObject);
+    procedure maiorDeidade(sender: Tobject);
+    private
+    list         : TStringList;
+    listSituacao : TStringList;
+    function temSobrenome  (const EdtName      : string): Boolean;
+    function emailValidacao(const EdtEmail     : string): Boolean;
+    function CEPDoParana   (const EdtCep       : string): Boolean;
+    function validaCpf     (const EdtDocumento : String): Boolean;
+    function separaTexto   (str  : String; nomeDoCampo: String) : string;
+    function textoToInt    (str  : String; nomeDoCampo: String) : int64;
+    function textoToBolean (str  : String; nomeDoCampo: String) : Boolean;
+    function booleanToTexto(valor: Boolean)    : String;
+    { Public declarations }
+    end;
+
+    var
+    FrmPrimeiroProjeto: TFrmPrimeiroProjeto;
+
+
+    const _fieldNome      = 'nome';
+          _fieldEmail     = 'email';
+          _fieldTelefone  = 'telefone';
+          _fieldcpf       = 'cpf';
+          _fieldcep       = 'cep';
+          _fieldBairro    = 'bairro';
+          _fieldRua       = 'rua';
+          _fieldNumero    = 'numero';
+          _fieldidade     = 'idade';
+          _fieldObs       = 'observacao';
+          _fieldSituacao  = 'situacao';
+          _fieldAtivo     = 'ativo';
+          _fieldCnh       = 'cnh';
+
+
+implementation
+
+{$R *.dfm}
+
+procedure TFrmPrimeiroProjeto.AdicionarClick(Sender: TObject);
+   var
+      str                   : string;
+      nPos1                 : Byte;
+      validacaoAnterior     : Boolean;
+      ativoString           : string;
+
+   begin
+      ativoString           := BoolToStr(ativo.Checked);
+      validacaoAnterior     := true;
+
+//
+   if( EdtName.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo nome não pode ser vazio');
+   end;
+
+   if( EdtEmail.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo email não pode ser vazio');
+   end;
+
+   if( EdtTelefone.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo telefone não pode ser vazio');
+   end;
+
+   if( EdtDocumento.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo documento não pode ser vazio');
+   end;
+
+   if( EdtRua.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo rua não pode ser vazio');
+   end;
+
+   if( EdtCep.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo cep não pode ser vazio');
+   end;
+
+   if( EdtBairro.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo bairro não pode ser vazio');
+   end;
+
+   if( EdtNumero.Text = '' ) then begin
+      validacaoAnterior := False;
+      ShowMessage('campo numero não pode ser vazio');
+   end;
+
+   if not emailValidacao(EdtEmail.Text) then
+      ShowMessage('Inserir Email corrretamente');
+
+   if not temSobrenome(EdtName.Text) then
+      ShowMessage('Por favor, insira um sobrenome no campo "nome".');
+
+   if CEPDoParana(EdtCEP.Text) then begin
+      ShowMessage('Este CEP pertence ao estado do Paraná.');
+   end
+   else begin
+      ShowMessage('Este CEP não pertence ao estado do Paraná.');
+   end;
+
+   if not validaCpf(edtDocumento.Text) then
+      showMessage('Cpf invalido');
+
+   if ( EdtIdade.Text = '' ) then begin
+      validacaoAnterior := false;
+      ShowMessage('campo idade não pode ser vazio');
+   end;
+
+   if ( memoObs.Text = '' ) then begin
+      validacaoAnterior := false;
+      ShowMessage('campo idade não pode ser vazio');
+   end;
+
+   if ( cmbSituacaoCivil.Text = '' ) then begin
+      validacaoAnterior := false;
+      ShowMessage('campo situação não pode ser vazio');
+   end;
+
+
+
+   if validacaoAnterior  = True then begin
+      str  :=       _fieldNome     + '='     + edtName.Text             + '#@';
+      str  := str + _fieldEmail    + '='     + edtEmail.text            + '#@';
+      str  := str + _fieldTelefone + '='     + edtTelefone.text         + '#@';
+      str  := str + _fieldcpf      + '='     + edtDocumento.text        + '#@';
+      str  := str + _fieldcep      + '='     + edtCep.text              + '#@';
+      str  := str + _fieldBairro   + '='     + edtBairro.text           + '#@';
+      str  := str + _fieldRua      + '='     + edtRua.text              + '#@';
+      str  := str + _fieldNumero   + '='     + edtNumero.text           + '#@';
+      str  := str + _fieldidade    + '='     + EdtIdade.Text            + '#@';
+      str  := str + _fieldObs      + '='     + memoObs.Text             + '#@';
+      str  := str + _fieldSituacao + '='     + cmbSituacaoCivil.Text    + '#@';
+      str  := str + _fieldAtivo    + '='     + ativoString              + '#@';
+      str  := str + _fieldCnh      + '='     + EdtCnh                   + '#@';
+
+      list.add( str );
+
+   end;
+
+      btnLimparClick(sender);
+
+   end;
+
+procedure TFrmPrimeiroProjeto.btnCarregarClick(Sender: TObject);
+   var str          : String;
+       nome         : String;
+       email        : String;
+       telefone     : string;
+       cpf          : Int64;
+       cep          : String;
+       bairro       : String;
+       rua          : String;
+       numero       : String;
+       idade        : Int64;
+       observacao   : string;
+       sitCivil     : String;
+       varAtivo     : String;
+       varId        : integer;
+       varcnh       : String;
+
+   begin
+      varId                    := StrToInt(EdtId.Text);
+      if list.Count > 0 then begin
+         str                   := list[varid];
+
+         nome                  := separaTexto(str, _fieldNome );
+         email                 := separaTexto(str, _fieldEmail);
+         telefone              := separaTexto(str, _fieldTelefone);
+         cpf                   := textoToInt (str, _fieldcpf);
+         cep                   := separaTexto(str, _fieldcep);
+         bairro                := separaTexto(str, _fieldBairro);
+         rua                   := separaTexto(str, _fieldRua);
+         numero                := separaTexto(str, _fieldNumero);
+         idade                 := textoToInt (str, _fieldidade);
+         observacao            := separaTexto(str, _fieldObs);
+         sitCivil              := separaTexto(str, _fieldSituacao);
+         varAtivo              := BoolToStr  (textoToBolean(str, _fieldAtivo));
+         varcnh                := separaTexto(str, _fieldCnh);
+
+
+         EdtName.Text          := nome;
+         EdtEmail.Text         := email;
+         EdtTelefone.Text      := telefone;
+         EdtDocumento.text     := IntToStr(cpf);
+         EdtCep.Text           := cep;
+         EdtBairro.Text        := bairro;
+         EdtRua.Text           := rua;
+         EdtNumero.Text        := numero;
+         EdtIdade.Text         := intToStr(idade);
+         memoObs.Text          := observacao;
+         cmbSituacaoCivil.Text := sitCivil;
+         ativo.Checked         := StrToBool(varAtivo);
+         Edtcnh.Text           := varcnh;
+
+
+      end
+      else
+      ShowMessage('A lista está vazia');
+   end;
+
+procedure TFrmPrimeiroProjeto.btnLimparClick(Sender: TObject);
+   begin
+         EdtName.Text            := '';
+         EdtEmail.Text           := '';
+         EdtTelefone.Text        := '';
+         EdtDocumento.Text       := '';
+         EdtCep.Text             := '';
+         EdtBairro.Text          := '';
+         EdtRua.Text             := '';
+         EdtNumero.Text          := '';
+         EdtIdade.Text           := '';
+         memoObs.Text            := '';
+         cmbSituacaoCivil.Text   := '';
+         ativo.Checked           := false;
+         EdtCnh.Text             := '';
+   end;
+
+
+procedure TFrmPrimeiroProjeto.btnVisualizarClick(Sender: TObject);
+   begin
+      showMessage(intToStr(list.Count));
+   end;
+
+function TFrmPrimeiroProjeto.CEPDoParana(const EdtCep: string): Boolean;
+   var CEPNumerico                       : String;
+   var PrimeirosDoisDigitos              : String;
+   var PrimeirosDoisDigitosComoNumero    : Integer;
+   begin
+      CEPNumerico                        := StringReplace(EdtCep, '-' , '' , [rfReplaceAll]);
+      CEPNumerico                        := Stringreplace(EdtCep, '.' , '' , [rfReplaceAll]);
+      PrimeirosDoisDigitos               := Copy(CEPNumerico, 1, 2);
+      PrimeirosDoisDigitosComoNumero     := StrToIntDef(PrimeirosDoisDigitos, 0);
+      Result                             := (PrimeirosDoisDigitosComoNumero >= 80) and (PrimeirosDoisDigitosComoNumero <= 87);
+   end;
+
+function TFrmPrimeiroProjeto.booleanToTexto(valor: Boolean): String;
+   begin
+      if valor then
+         result := 'S'
+      else
+         result := 'N' ;
+   end;
+
+
+function TFrmPrimeiroProjeto.emailValidacao(const EdtEmail: string): Boolean;
+   begin
+      Result := Pos('@', EdtEmail) > 0;
+   end;
+
+procedure TFrmPrimeiroProjeto.FecharClick(Sender: TObject);
+   begin
+      close;
+   end;
+
+procedure TFrmPrimeiroProjeto.FormCreate(Sender: TObject);
+   begin
+      list         := TStringList.create;
+      listSituacao := TStringList.Create;
+
+      ativo.Checked := false;
+
+      listSituacao.Add( 'casado' );
+      listSituacao.Add( 'Solteiro' );
+      listSituacao.Add( 'Namorando' );
+      cmbSituacaoCivil.Items.AddStrings(listSituacao);
+
+   end;
+
+
+procedure TFrmPrimeiroProjeto.maiorDeidade(sender: Tobject);
+   begin
+      if StrToInt(EdtIdade.Text) >= 18 then
+      EdtCnh.Enabled := true
+      else
+      EdtCnh.Enabled := false;
+   end;
+
+function TFrmPrimeiroProjeto.separaTexto(str, nomeDoCampo: String): string;
+   var
+      posCampo, posDelimitador : Integer;
+   begin
+      result         := '';
+      posCampo       := Pos(lowercase(nomeDoCampo) + '=', str);
+      posDelimitador := Pos('#@', str, posCampo + Length(lowercase(nomeDoCampo)) + 1);
+      result         := Copy(str, posCampo + Length(lowercase(nomeDoCampo)) + 1, posDelimitador - posCampo - Length(lowercase(nomeDoCampo)) - 1);
+   end;
+
+
+function TFrmPrimeiroProjeto.temSobrenome(const EdtName: string): Boolean;
+   begin
+      Result := Pos(' ', Trim(EdtName)) > 0;
+   end;
+
+function TFrmPrimeiroProjeto.textoToBolean(str, nomeDoCampo: String): Boolean;
+   begin
+      result := StrToBool(separaTexto(str, nomedocampo));
+   end;
+
+function TFrmPrimeiroProjeto.textoToInt(str, nomeDoCampo: String): int64;
+   begin
+      result := StrToInt64(separatexto(str, nomedocampo));
+   end;
+
+
+
+function TFrmPrimeiroProjeto.validaCpf(const EdtDocumento: String): Boolean;
+   var
+      i, soma,digitoCalculado   : integer;
+      cpfNumerico               : String;
+      cpfvalido                 : Boolean;
+
+   begin
+      cpfvalido            := False;
+      cpfNumerico          := StringReplace(edtDocumento, '-', '' , [rfReplaceAll]);
+      cpfNumerico          := StringReplace(edtDocumento, '.', '' , [rfReplaceAll]);
+      soma                 := 0;
+
+      for i                := 1 to 9 do
+         soma              := soma + StrToInt(cpfNumerico[i]) * (11 - i );
+         digitoCalculado   := 11 - (soma mod 11);
+
+      if digitoCalculado   >= 10 then
+         digitoCalculado   := 0;
+
+      if Strtoint(cpfNumerico[10]) = digitoCalculado then begin
+        soma               := 0;
+
+        for i              := 1 to 10 do
+           soma            := soma + StrtoInt(cpfNumerico[i]) * (12 - 1);
+           digitoCalculado := 11 - (soma mod 11);
+
+        if digitoCalculado >= 10 then
+           digitoCalculado := 0;
+
+        if StrtoInt(cpfNumerico[11]) = digitoCalculado then
+           cpfvalido := true;
+      end;
+
+      Result := cpfvalido;
+   end;
+end.
+
+
+
+
