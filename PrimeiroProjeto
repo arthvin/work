@@ -1,48 +1,47 @@
-unit PrimeiroProjeto;
+   unit formTesteComGrid;
 
-interface
+   interface
 
-uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Data.DB, Vcl.Grids,
-  Vcl.DBGrids, Vcl.ExtCtrls, Vcl.Buttons;
+   uses
+   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls;
 
-type
-    TFrmPrimeiroProjeto = class(TForm)
+   type
+    TfrmTesteComGrid = class(TForm)
     Panel1: TPanel;
+    btnCarregar: TButton;
+    btnProcurar: TButton;
+    btnLimpar: TButton;
+    btnExcluir: TButton;
+    Fechar: TButton;
+    Salvar: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    Fechar: TButton;
-    Salvar: TButton;
-    EdtName: TEdit;
-    EdtEmail: TEdit;
-    EdtTelefone: TEdit;
-    EdtDocumento: TEdit;
-    EdtRua: TEdit;
-    EdtCep: TEdit;
-    EdtBairro: TEdit;
-    EdtNumero: TEdit;
-    btnCarregar: TButton;
-    btnLimpar: TButton;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Situação: TLabel;
     ativo: TCheckBox;
+    memoObs: TMemo;
     cmbSituacaoCivil: TComboBox;
     EdtIdade: TEdit;
-    Label6: TLabel;
-    Label10: TLabel;
-    memoObs: TMemo;
-    Situação: TLabel;
     EdtId: TEdit;
-    Label11: TLabel;
+    EdtTelefone: TEdit;
+    EdtDocumento: TEdit;
+    EdtBairro: TEdit;
+    EdtCep: TEdit;
+    EdtNumero: TEdit;
+    EdtRua: TEdit;
+    EdtEmail: TEdit;
+    EdtName: TEdit;
     EdtCnh: TEdit;
-    Label12: TLabel;
-    btnExcluir: TBitBtn;
-    btnProcurar: TButton;
     procedure FecharClick(Sender: TObject);
     procedure btnCarregarClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -51,6 +50,7 @@ type
     procedure SalvarClick(Sender: TObject);
     procedure btnExcluirClick(Sender: TObject);
     procedure btnProcurarClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     private
     list         : TStringList;
     listSituacao : TStringList;
@@ -63,11 +63,12 @@ type
     function textoToBolean     (str  : String; nomeDoCampo: String) : Boolean;
     function nameOfRecordList  (list : TStringList; _fieldnome : String; valor : String) : integer;
     function indexOfRecordList (list : TStringList; _fieldId   : String; valor : String) : integer;
+    public
     { Public declarations }
     end;
 
     var
-    FrmPrimeiroProjeto: TFrmPrimeiroProjeto;
+    frmTesteComGrid: TfrmTesteComGrid;
 
 
     const _fieldNome      = 'nome';
@@ -86,30 +87,29 @@ type
           _fieldId        = 'id';
 
 
-implementation
+    implementation
 
-{$R *.dfm}
+   {$R *.dfm}
 
-//carregar
-procedure TFrmPrimeiroProjeto.btnCarregarClick(Sender: TObject);
+   procedure TfrmTesteComGrid.btnCarregarClick(Sender: TObject);
    var
-       str          : String;
-       nome         : String;
-       email        : String;
-       telefone     : string;
-       cpf          : Int64;
-       cep          : String;
-       bairro       : String;
-       rua          : String;
-       numero       : String;
-       idade        : Int64;
-       observacao   : string;
-       sitCivil     : String;
-       varAtivo     : String;
-       varId        : integer;
-       varcnh       : String;
-       index        : Integer;
-       idEncontrado : Boolean;
+      str          : String;
+      nome         : String;
+      email        : String;
+      telefone     : string;
+      cpf          : Int64;
+      cep          : String;
+      bairro       : String;
+      rua          : String;
+      numero       : String;
+      idade        : Int64;
+      observacao   : string;
+      sitCivil     : String;
+      varAtivo     : String;
+      varId        : integer;
+      varcnh       : String;
+      index        : Integer;
+      idEncontrado : Boolean;
 
    begin
       varid                 := StrToint(EdtId.Text);
@@ -161,9 +161,7 @@ procedure TFrmPrimeiroProjeto.btnCarregarClick(Sender: TObject);
       end;
    end;
 
-
-//limpar
-procedure TFrmPrimeiroProjeto.btnLimparClick(Sender: TObject);
+   procedure TfrmTesteComGrid.btnLimparClick(Sender: TObject);
    begin
       EdtName.Text            := '';
       EdtEmail.Text           := '';
@@ -181,8 +179,7 @@ procedure TFrmPrimeiroProjeto.btnLimparClick(Sender: TObject);
       EdtId.Text              := '';
    end;
 
-//Procurar
-procedure TFrmPrimeiroProjeto.btnProcurarClick(Sender: TObject);
+   procedure TfrmTesteComGrid.btnProcurarClick(Sender: TObject);
    var
       str          : String;
       nome         : String;
@@ -252,51 +249,101 @@ procedure TFrmPrimeiroProjeto.btnProcurarClick(Sender: TObject);
       end;
    end;
 
+   procedure TfrmTesteComGrid.FecharClick(Sender: TObject);
+   begin
+      close;
+   end;
 
-//cepParana
-function TFrmPrimeiroProjeto.CEPDoParana(EdtCep: string): Boolean;
+   function TfrmTesteComGrid.CEPDoParana(EdtCep: string): Boolean;
    var
       CEPNumerico                       : String;
       PrimeirosDoisDigitos              : String;
       PrimeirosDoisDigitosComoNumero    : Integer;
    begin
-      CEPNumerico                        := StringReplace(EdtCep, '-' , '' , [rfReplaceAll]);
-      CEPNumerico                        := Stringreplace(EdtCep, '.' , '' , [rfReplaceAll]);
-      PrimeirosDoisDigitos               := Copy(CEPNumerico, 1, 2);
-      PrimeirosDoisDigitosComoNumero     := StrToIntDef(PrimeirosDoisDigitos, 0);
-      Result                             := (PrimeirosDoisDigitosComoNumero >= 80) and (PrimeirosDoisDigitosComoNumero <= 87);
+      CEPNumerico                       := StringReplace(EdtCep, '-' , '' , [rfReplaceAll]);
+      CEPNumerico                       := Stringreplace(EdtCep, '.' , '' , [rfReplaceAll]);
+      PrimeirosDoisDigitos              := Copy(CEPNumerico, 1, 2);
+      PrimeirosDoisDigitosComoNumero    := StrToIntDef(PrimeirosDoisDigitos, 0);
+      Result                            := (PrimeirosDoisDigitosComoNumero >= 80) and (PrimeirosDoisDigitosComoNumero <= 87);
    end;
 
-
-//emailVerificacao
-function TFrmPrimeiroProjeto.emailValidacao(EdtEmail: string): Boolean;
+   function TfrmTesteComGrid.emailValidacao(EdtEmail: string): Boolean;
    begin
       Result := Pos('@', EdtEmail) > 0;
    end;
 
-//fechar
-procedure TFrmPrimeiroProjeto.FecharClick(Sender: TObject);
+   procedure TfrmTesteComGrid.FormClose(Sender: TObject;
+   var Action: TCloseAction);
    begin
-      close;
+      freeAndNIl(listSituacao);
+      freeAndNIl(list);
    end;
 
-//formCreate
-procedure TFrmPrimeiroProjeto.FormCreate(Sender: TObject);
+   procedure TfrmTesteComGrid.FormCreate(Sender: TObject);
+   var
+      str           : String;
    begin
-      list         := TStringList.create;
-      listSituacao := TStringList.Create;
+      list          := TStringList.create;
+      listSituacao  := TStringList.Create;
 
       ativo.Checked := false;
 
       listSituacao.Add( 'casado' );
       listSituacao.Add( 'Solteiro' );
       listSituacao.Add( 'Namorando' );
+
       cmbSituacaoCivil.Items.AddStrings(listSituacao);
 
+      str  :=        _fieldNome    + '='     + 'Arthur Semensati'       + '#@';
+      str  := str + _fieldEmail    + '='     + 'arth@gmail'             + '#@';
+      str  := str + _fieldTelefone + '='     + '444444'                 + '#@';
+      str  := str + _fieldcpf      + '='     + '09958597950'            + '#@';
+      str  := str + _fieldcep      + '='     + '88888'                  + '#@';
+      str  := str + _fieldBairro   + '='     + 'jardim alzira'          + '#@';
+      str  := str + _fieldRua      + '='     + 'Rua das p'              + '#@';
+      str  := str + _fieldNumero   + '='     + '1212'                   + '#@';
+      str  := str + _fieldidade    + '='     + '20'                     + '#@';
+      str  := str + _fieldObs      + '='     + 'nada'                   + '#@';
+      str  := str + _fieldSituacao + '='     + 'solteiro'               + '#@';
+      str  := str + _fieldAtivo    + '='     + 'True'                   + '#@';
+      str  := str + _fieldCnh      + '='     + '0'                      + '#@';
+      str  := str + _fieldId       + '='     + '12'                     + '#@';
+      list.Add(str);
+
+      str  :=        _fieldNome    + '='     + 'leandro r'              + '#@';
+      str  := str + _fieldEmail    + '='     + 'leandro@gmai'           + '#@';
+      str  := str + _fieldTelefone + '='     + '848484'                 + '#@';
+      str  := str + _fieldcpf      + '='     + '09958597950'            + '#@';
+      str  := str + _fieldcep      + '='     + '62005'                  + '#@';
+      str  := str + _fieldBairro   + '='     + 'mandacaru'              + '#@';
+      str  := str + _fieldRua      + '='     + 'rua rua'                + '#@';
+      str  := str + _fieldNumero   + '='     + '5450'                   + '#@';
+      str  := str + _fieldidade    + '='     + '65'                     + '#@';
+      str  := str + _fieldObs      + '='     + 'nao sei'                + '#@';
+      str  := str + _fieldSituacao + '='     + 'namorando'              + '#@';
+      str  := str + _fieldAtivo    + '='     + 'true'                   + '#@';
+      str  := str + _fieldCnh      + '='     + '54'                     + '#@';
+      str  := str + _fieldId       + '='     + '13'                     + '#@';
+      list.Add(str);
+
+      str  :=        _fieldNome    + '='     + 'natanael cesu'          + '#@';
+      str  := str + _fieldEmail    + '='     + 'natan@gmail'            + '#@';
+      str  := str + _fieldTelefone + '='     + '985191'                 + '#@';
+      str  := str + _fieldcpf      + '='     + '09958597950'            + '#@';
+      str  := str + _fieldcep      + '='     + '518120'                 + '#@';
+      str  := str + _fieldBairro   + '='     + 'maringa'                + '#@';
+      str  := str + _fieldRua      + '='     + 'centro'                 + '#@';
+      str  := str + _fieldNumero   + '='     + '5126929'                + '#@';
+      str  := str + _fieldidade    + '='     + '33'                     + '#@';
+      str  := str + _fieldObs      + '='     + 'ufa'                    + '#@';
+      str  := str + _fieldSituacao + '='     + 'casado'                 + '#@';
+      str  := str + _fieldAtivo    + '='     + 'true'                   + '#@';
+      str  := str + _fieldCnh      + '='     + '12'                     + '#@';
+      str  := str + _fieldId       + '='     + '14'                     + '#@';
+      list.Add(str);
    end;
 
-//Excluir
-procedure TFrmPrimeiroProjeto.btnExcluirClick(Sender: TObject);
+   procedure TfrmTesteComGrid.btnExcluirClick(Sender: TObject);
    var
       index     :  integer;
       idExcluir :  integer;
@@ -306,8 +353,7 @@ procedure TFrmPrimeiroProjeto.btnExcluirClick(Sender: TObject);
       btnLimparClick(sender);
    end;
 
-//indexRecordList
-function TFrmPrimeiroProjeto.indexOfRecordList(list: TStringList; _fieldId : String; valor : String): integer;
+   function TfrmTesteComGrid.indexOfRecordList(list: TStringList; _fieldId : String; valor : String): integer;
    var
       index : integer;
    begin
@@ -315,11 +361,9 @@ function TFrmPrimeiroProjeto.indexOfRecordList(list: TStringList; _fieldId : Str
       for index := 0 to list.Count - 1 do
          if textoToint(list[index],_fieldId) = strtoint(valor) then
             result := index;
-  end;
+   end;
 
-
-//nameOfrecordList
-function TFrmPrimeiroProjeto.nameOfRecordList(list: TStringList; _fieldNome : string; valor: String): integer;
+   function TfrmTesteComGrid.nameOfRecordList(list: TStringList; _fieldNome : string; valor: String): integer;
    var
       index : integer;
    begin
@@ -329,8 +373,8 @@ function TFrmPrimeiroProjeto.nameOfRecordList(list: TStringList; _fieldNome : st
             result := index;
    end;
 
-//salvar
-procedure TFrmPrimeiroProjeto.SalvarClick(Sender: TObject);
+
+   procedure TfrmTesteComGrid.SalvarClick(Sender: TObject);
    var
       str                : string;
       validacaoAnterior  : Boolean;
@@ -477,9 +521,7 @@ procedure TFrmPrimeiroProjeto.SalvarClick(Sender: TObject);
       end;
    end;
 
-
-//separaTexto
-function TFrmPrimeiroProjeto.separaTexto(str, nomeDoCampo: String): string;
+   function TfrmTesteComGrid.separaTexto(str, nomeDoCampo: String): string;
    var
       posCampo, posDelimitador : Integer;
    begin
@@ -489,26 +531,22 @@ function TFrmPrimeiroProjeto.separaTexto(str, nomeDoCampo: String): string;
       result         := Copy(str, posCampo + Length(lowercase(nomeDoCampo)) + 1, posDelimitador - posCampo - Length(lowercase(nomeDoCampo)) - 1);
    end;
 
-//temSobrenome
-function TFrmPrimeiroProjeto.temSobrenome(EdtName: string): Boolean;
+   function TfrmTesteComGrid.temSobrenome(EdtName: string): Boolean;
    begin
       Result := Pos(' ', Trim(EdtName)) > 0;
    end;
 
-//textoToBoolean
-function TFrmPrimeiroProjeto.textoToBolean(str, nomeDoCampo: String): Boolean;
+   function TfrmTesteComGrid.textoToBolean(str, nomeDoCampo: String): Boolean;
    begin
       result := StrToBool(separaTexto(str, nomedocampo));
    end;
 
-//textoToInt
-function TFrmPrimeiroProjeto.textoToInt(str, nomeDoCampo: String): int64;
+   function TfrmTesteComGrid.textoToInt(str, nomeDoCampo: String): int64;
    begin
       result := StrToInt64(separatexto(str, nomedocampo));
    end;
 
-//validaCPF
-function TFrmPrimeiroProjeto.validaCpf(EdtDocumento: String): Boolean;
+   function TfrmTesteComGrid.validaCpf(EdtDocumento: String): Boolean;
    var
       i, soma,digitoCalculado   : integer;
       cpfNumerico               : String;
@@ -544,13 +582,11 @@ function TFrmPrimeiroProjeto.validaCpf(EdtDocumento: String): Boolean;
       Result := cpfvalido;
    end;
 
-//maiorIdade
-procedure TFrmPrimeiroProjeto.maiorDeidade(sender: Tobject);
+   procedure TfrmTesteComGrid.maiorDeidade(sender: Tobject);
    begin
       if StrToInt(EdtIdade.Text) >= 18 then
          EdtCnh.Enabled := true
          else
          EdtCnh.Enabled := false;
    end;
-
 end.
